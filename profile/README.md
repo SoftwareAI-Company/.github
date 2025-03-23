@@ -3,7 +3,6 @@
 - Here in this readme you will find the company's main criteria and architectures
 
 - [Code Review](https://github.com/SoftwareAI-Company/.github/blob/main/profile/Criteria/CodeReview/conventions.md)
-- 
 - [Code Conventions](https://github.com/SoftwareAI-Company/.github/blob/main/profile/Criteria/CodeConventions/conventions.md)
 
 - [Automated Test](https://github.com/SoftwareAI-Company/.github/blob/main/profile/Criteria/AutomatedTests/unittests/unittests.md)
