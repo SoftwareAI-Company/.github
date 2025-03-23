@@ -5,7 +5,7 @@
 
 [] profile/Criteria/Automated Tests
 
-- [Automated Test](/Criteria/AutomatedTests/unittests/unittests.md)
+- [Automated Test](https://github.com/SoftwareAI-Company/.github/profile/Criteria/AutomatedTests/unittests/unittests.md)
 
 
 
