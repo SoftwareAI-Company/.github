@@ -5,7 +5,7 @@
 
 [] profile/Criteria/Automated Tests
 
-- [Automated Test](profile/Criteria/Automated-Tests/unit-tests/unit-tests.md)
+- [Automated Test](Criteria/Automated-Tests/unit-tests/unit-tests.md)
 
 
 
