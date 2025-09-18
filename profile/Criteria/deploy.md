@@ -1,8 +1,39 @@
 ### Guia de deploy em vps via ssh
+**Configuracao Docker**
+- acesse a maquina:
+  ```bash
+  ssh administrator@IP_DO_SERVIDOR
+  ```
+- instala as dependencias:
+  ```bash
+  sudo apt update && sudo apt upgrade -y && \
+  sudo apt install -y ca-certificates curl gnupg lsb-release && \
+  sudo mkdir -p /etc/apt/keyrings && \
+  curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+  sudo apt update && \
+  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+  sudo systemctl enable docker && sudo systemctl start docker && \
+  docker --version && docker compose version
+  ```
+
+
+
+- Testar a instalação
+  ```bash
+  docker --version
+  docker compose version
+  ```
+
+
+
+
+
+
 **Configuracao Nginx**
 - crie o arquivo: `nomedoapp.conf`
 - acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
-- acesse o conteudo com: `sudo nano /etc/nginx/nginx.conf`
+- edite o conteudo com: `sudo nano /etc/nginx/nginx.conf`
 - coloque o upstream correspondente ao `nomedoapp.conf`
 - acesse o zerossl.com e crie um ssl para o front end 
 - baixe o .zip extraia e execute o `type ca_bundle.crt >> certificate.crt`
