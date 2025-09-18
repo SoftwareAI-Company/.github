@@ -1,6 +1,13 @@
+### Guia de deploy em vps via ssh
 
-no windows:
-scp empl.conf administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/sites-available/
+**para iniciar altere os nomes**
+- altere: employersai.conf
+- altere: apiemployersai
+- altere: employersai
+
+**copia o arquivo de nginx do projeto**
+scp employersai.conf administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/sites-available/
+
 
 ssh administrator@IP_DO_SERVIDOR
 
@@ -16,5 +23,11 @@ sudo chown root:root /etc/nginx/certificados/apiemployersai/* && \
 sudo chmod 644 /etc/nginx/certificados/apiemployersai/certificate.crt && \
 sudo chmod 600 /etc/nginx/certificados/apiemployersai/private.key && \
 
+sudo mkdir -p /etc/nginx/certificados/employersai && \
+sudo cp /home/administrator/etc/nginx/certificados/employersai/certificate.crt /etc/nginx/certificados/employersai/certificate.crt && \
+sudo cp /home/administrator/etc/nginx/certificados/employersai/private.key /etc/nginx/certificados/employersai/private.key && \
+sudo chown root:root /etc/nginx/certificados/employersai/* && \
+sudo chmod 644 /etc/nginx/certificados/employersai/certificate.crt && \
+sudo chmod 600 /etc/nginx/certificados/employersai/private.key && \
 
 sudo nginx -t && sudo systemctl reload nginx && echo ".conf e certificados instalados"
