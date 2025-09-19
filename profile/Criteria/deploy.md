@@ -48,6 +48,10 @@ sudo ufw reload
 
   ```
 
+- Crie a rede docker
+```bash
+docker network create rede_externa
+```
 
 
 - Testar a instalação
