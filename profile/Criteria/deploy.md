@@ -178,7 +178,7 @@ sudo nginx -t && sudo systemctl reload nginx && echo ".conf e certificados insta
 ```bash
 ssh-keygen -t rsa -b 4096 -C "ServidorVPS"
 ```
-
+copie a chave que esta no arquivo .pub para authorized_keys
 
 
 
