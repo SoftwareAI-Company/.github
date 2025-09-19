@@ -1,4 +1,33 @@
 ### Guia de deploy em vps via ssh
+**Configuração xRDP**
+O xRDP permite acessar a VPS via desktop remoto (RDP).
+- acesse a maquina:
+  ```bash
+  ssh administrator@IP_DO_SERVIDOR
+  ```
+- Instalar xRDP e ambiente gráfico
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y xfce4 xfce4-goodies xrdp
+echo "startxfce4" > ~/.xsession
+```
+
+- Habilitar e iniciar o serviço xRDP
+
+```bash
+sudo systemctl enable xrdp
+sudo systemctl start xrdp
+sudo systemctl status xrdp
+```
+
+- Configurar firewall (se aplicável)
+```bash
+sudo ufw allow 3389/tcp
+sudo ufw reload
+```
+
+---
 **Configuracao Docker**
 - acesse a maquina:
   ```bash
