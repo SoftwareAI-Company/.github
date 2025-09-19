@@ -43,7 +43,9 @@ sudo ufw reload
   sudo apt update && \
   sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
   sudo systemctl enable docker && sudo systemctl start docker && \
-  docker --version && docker compose version
+  docker --version && docker compose version && \
+  sudo usermod -aG docker administrator
+
   ```
 
 
