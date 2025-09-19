@@ -87,6 +87,7 @@ type ca_bundle.crt >> certificate.crt
 ```
 - altere o nome da pasta para nao conter espacos: `nomedoapp`
 - acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
+- inicialize a pasta de certificados ssl
 ```bash
 sudo mkdir -p /etc/nginx/certificados && \
 sudo mkdir -p /home/administrator/etc/nginx/certificados && \
@@ -118,7 +119,19 @@ sudo chmod 600 /etc/nginx/certificados/nomedoapp/private.key
   ```
 - altere o nome da pasta para nao conter espacos: `nomedoapp`
 - acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
-  
+  - inicialize a pasta de certificados ssl
+```bash
+sudo mkdir -p /etc/nginx/certificados && \
+sudo mkdir -p /home/administrator/etc/nginx/certificados && \
+sudo chown -R administrator:administrator /home/administrator/etc/nginx/ && \
+sudo chown -R administrator:administrator /etc/nginx/
+```
+
+- abra o cmd na pasta download e copia a pasta `nomedoapp` para a vps:
+```bash
+scp -r nomedoapp administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/certificados/
+```
+
 - copia a pasta `apinomedoapp` para a pasta nginx definitiva: 
 ```bash
 sudo mkdir -p /etc/nginx/certificados/apinomedoapp && \
@@ -129,19 +142,46 @@ sudo chmod 644 /etc/nginx/certificados/apinomedoapp/certificate.crt && \
 sudo chmod 600 /etc/nginx/certificados/apinomedoapp/private.key
 ```
 
+- crie a pasta de sites disponiveis:
+```bash
+sudo mkdir -p /etc/nginx/sites-available/ && \
+sudo mkdir -p /home/administrator/etc/nginx/sites-available/ && \
+sudo chown root:root /etc/nginx/sites-available/* && \
+sudo chown root:root /etc/nginx/sites-available/*
+```
+
 - copie o arquivo nomedoapp.conf para a maquina:
-  ```bash
-  scp nomedoapp.conf administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/sites-available/```
-  ```
+```bash
+scp nomedoapp.conf administrator@IP_DO_SERVIDOR:/home/administrator/
+```
+hub.conf
+
+
 - copia o nomedoapp.conf para a pasta nginx definitiva:
 ```bash
-sudo cp /home/administrator/etc/nginx/sites-available/nomedoapp.conf /etc/nginx/sites-available/nomedoapp.conf && \
-sudo chown root:root /etc/nginx/sites-available/nomedoapp.conf && \
-sudo chmod 644 /etc/nginx/sites-available/nomedoapp.conf && \
-sudo ln -sf /etc/nginx/sites-available/nomedoapp.conf /etc/nginx/sites-enabled/nomedoapp.conf
+sudo mv /home/administrator/softwareaihub.conf /home/administrator/etc/nginx/sites-available/softwareaihub.conf && \
+sudo chown root:root /home/administrator/etc/nginx/sites-available/softwareaihub.conf && \
+sudo cp /home/administrator/etc/nginx/sites-available/softwareaihub.conf /etc/nginx/sites-available/softwareaihub.conf && \
+sudo chown root:root /etc/nginx/sites-available/softwareaihub.conf && \
+sudo chmod 644 /etc/nginx/sites-available/softwareaihub.conf && \
+sudo ln -sf /etc/nginx/sites-available/softwareaihub.conf /etc/nginx/sites-enabled/softwareaihub.conf
 ```
 
 - checka se tudo esta certo:
 ```bash
-  sudo nginx -t && sudo systemctl reload nginx && echo ".conf e certificados instalados"
+sudo nginx -t && sudo systemctl reload nginx && echo ".conf e certificados instalados"
 ```
+
+
+**Configuracao de secrets**
+- criando o SSH_PRIVATE_KEY
+```bash
+ssh-keygen -t rsa -b 4096 -C "ServidorVPS"
+```
+
+
+
+
+
+
+
