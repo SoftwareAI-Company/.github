@@ -8,22 +8,22 @@ O xRDP permite acessar a VPS via desktop remoto (RDP).
 - Instalar xRDP e ambiente gráfico
 
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y xfce4 xfce4-goodies xrdp
+sudo apt update && sudo apt upgrade -y  && \
+sudo apt install -y xfce4 xfce4-goodies xrdp  && \
 echo "startxfce4" > ~/.xsession
 ```
 
 - Habilitar e iniciar o serviço xRDP
 
 ```bash
-sudo systemctl enable xrdp
-sudo systemctl start xrdp
+sudo systemctl enable xrdp  && \
+sudo systemctl start xrdp  && \
 sudo systemctl status xrdp
 ```
 
 - Configurar firewall (se aplicável)
 ```bash
-sudo ufw allow 3389/tcp
+sudo ufw allow 3389/tcp  && \
 sudo ufw reload
 ```
 
@@ -60,6 +60,19 @@ sudo ufw reload
 
 
 **Configuracao Nginx**
+- acesse a maquina:
+  ```bash
+  ssh administrator@IP_DO_SERVIDOR
+  ```
+- Instalar Nginx na VPS:
+  ```bash
+  sudo apt update && sudo apt upgrade -y && \
+  sudo apt install -y nginx && \
+  sudo systemctl enable nginx && \
+  sudo systemctl start nginx && \
+  sudo systemctl status nginx
+  ```
+
 - crie o arquivo: `nomedoapp.conf`
 - acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
 - edite o conteudo com:
@@ -74,7 +87,18 @@ type ca_bundle.crt >> certificate.crt
 ```
 - altere o nome da pasta para nao conter espacos: `nomedoapp`
 - acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
-  
+```bash
+sudo mkdir -p /etc/nginx/certificados && \
+sudo mkdir -p /home/administrator/etc/nginx/certificados && \
+sudo chown -R administrator:administrator /home/administrator/etc/nginx/ && \
+sudo chown -R administrator:administrator /etc/nginx/
+```
+
+- abra o cmd na pasta download e copia a pasta `nomedoapp` para a vps:
+```bash
+scp -r nomedoapp administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/certificados/
+```
+
 - copia a pasta `nomedoapp` para a pasta nginx definitiva: 
 ```bash
 sudo mkdir -p /etc/nginx/certificados/nomedoapp && \
@@ -106,9 +130,9 @@ sudo chmod 600 /etc/nginx/certificados/apinomedoapp/private.key
 ```
 
 - copie o arquivo nomedoapp.conf para a maquina:
-  ```bashscp nomedoapp.conf administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/sites-available/```
-  
-- acesse a maquina: `ssh administrator@IP_DO_SERVIDOR`
+  ```bash
+  scp nomedoapp.conf administrator@IP_DO_SERVIDOR:/home/administrator/etc/nginx/sites-available/```
+  ```
 - copia o nomedoapp.conf para a pasta nginx definitiva:
 ```bash
 sudo cp /home/administrator/etc/nginx/sites-available/nomedoapp.conf /etc/nginx/sites-available/nomedoapp.conf && \
