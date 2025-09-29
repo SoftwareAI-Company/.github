@@ -187,7 +187,8 @@ ssh-keygen -t rsa -b 4096 -C "ServidorVPS"
 copie a chave que esta no arquivo .pub para authorized_keys
 
 
-
+dministrator@vps-trbg:~$ sudo chown -R administrator:administrator /home/administrator/deploys/docsphere
+administrator@vps-trbg:~$ sudo chmod -R u+rwX /home/administrator/deploys/docsphere
 
 
 
