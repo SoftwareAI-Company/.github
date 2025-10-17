@@ -21,8 +21,9 @@ sudo systemctl start xrdp  && \
 sudo systemctl status xrdp
 ```
 
-- Configurar firewall (se aplicável)
+- Configurar firewall pra xrdp
 ```bash
+sudo apt update -y && sudo apt install ufw -y
 sudo ufw allow 3389/tcp  && \
 sudo ufw reload
 ```
