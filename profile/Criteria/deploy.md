@@ -1,4 +1,55 @@
 ### Guia de criacao de ssl gratis atraves do lets encrypt
+Acesse o servidor via SSH
+Acesse o servidor que hospeda seu site HTTP via SSH como um usuário com privilégios sudo.
+
+Instalar dependências do sistema
+As dependências do sistema podem incluir Python 3.6 ou superior, incluindo o módulo venv, e Augeas para o plugin do Apache.
+
+Se você estiver com dificuldades para instalar o pacote cryptography, talvez precise instalar dependências adicionais. Consulte o site do projeto cryptography para obter mais informações.
+
+Os comandos para instalar dependências do sistema podem ser semelhantes aos seguintes e devem ser executados na linha de comando da máquina.
+
+Para distribuições baseadas em APT (ex: Debian, Ubuntu ...):
+
+sudo apt update
+sudo apt install python3 python3-dev python3-venv libaugeas-dev gcc
+Para distribuições baseadas em RPM (ex: Fedora, CentOS ...):
+
+sudo dnf install python3 python-devel augeas-devel gcc
+Observe que as distribuições antigas usam yumem vez de dnf, e que as distribuições baseadas em RHEL usam python3Xem vez de python3(por exemplo python36<, ).
+
+Esses pacotes podem ter nomes ligeiramente diferentes em outras distribuições; uma busca como "augeas on" pode ajudar."Provavelmente produzirá resultados úteis."
+
+Remova o certbot-auto e quaisquer pacotes Certbot do sistema operacional.
+Se você tiver algum pacote do Certbot instalado usando um gerenciador de pacotes do sistema operacional, como o `snap` apt, dnf`snap` ou yum`snap`, remova-o antes de instalar o snap do Certbot para garantir que, ao executar o comando, certboto snap seja usado em vez da instalação feita pelo gerenciador de pacotes do sistema operacional. O comando exato para fazer isso depende do seu sistema operacional, mas exemplos comuns são `certbot snap`, `certbot snap` sudo apt-get remove certbotou sudo dnf remove certbot`certbot snap` sudo yum remove certbot.
+
+Configure um ambiente virtual Python.
+Execute as seguintes instruções na linha de comando da máquina para configurar um ambiente virtual.
+
+sudo python3 -m venv /opt/certbot/
+sudo /opt/certbot/bin/pip install --upgrade pip
+Instale o Certbot
+Execute este comando na linha de comando da máquina para instalar o Certbot.
+
+sudo /opt/certbot/bin/pip install certbot certbot-nginx
+Prepare o comando Certbot
+Execute a seguinte instrução na linha de comando da máquina para garantir que o certbotcomando possa ser executado.
+
+sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+Escolha como você gostaria de executar o Certbot.
+Você pode obter e instalar seus certificados...
+Execute este comando para obter um certificado e fazer com que o Certbot edite automaticamente sua configuração do nginx para servi-lo, ativando o acesso HTTPS em uma única etapa.
+
+sudo certbot --nginx
+Ou então, simplesmente obtenha um certificado.
+Se você prefere uma abordagem mais conservadora e gostaria de fazer as alterações na sua configuração do nginx manualmente, execute este comando.
+
+sudo certbot certonly --nginx
+Configure a renovação automática
+Recomendamos executar a seguinte linha, que adicionará uma tarefa cron ao crontab padrão.
+
+echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null
+
 
 
 Você já **emitiu o certificado com sucesso**, agora falta **ativar ele no Nginx** e **recarregar o serviço**.
