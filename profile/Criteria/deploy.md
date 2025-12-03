@@ -12,13 +12,7 @@ Aqui está exatamente o que fazer agora:
 Execute:
 
 ```bash
-sudo nano /etc/nginx/sites-available/mediacutsstudio.com
-```
-
-Se o arquivo não existir, veja o nome certo:
-
-```bash
-ls /etc/nginx/sites-available
+sudo nano /etc/nginx/sites-available/mediacutsstudio.conf
 ```
 
 ---
