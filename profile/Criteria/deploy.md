@@ -8,8 +8,12 @@ Aqui está exatamente o que fazer agora:
 ---
 
 ## 1️⃣ Verifique se existe um servidor Nginx para `mediacutsstudio.com`
-
+veja o nome certo:
+```bash
+ls /etc/nginx/sites-available
+```
 Execute:
+
 
 ```bash
 sudo nano /etc/nginx/sites-available/mediacutsstudio.conf
