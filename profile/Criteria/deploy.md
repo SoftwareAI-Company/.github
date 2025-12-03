@@ -1,3 +1,266 @@
+### Guia de criacao de ssl gratis atraves do lets encrypt
+
+
+Você já **emitiu o certificado com sucesso**, agora falta **ativar ele no Nginx** e **recarregar o serviço**.
+
+Aqui está exatamente o que fazer agora:
+
+---
+
+## 1️⃣ Verifique se existe um servidor Nginx para `mediacutsstudio.com`
+
+Execute:
+
+```bash
+sudo nano /etc/nginx/sites-available/mediacutsstudio.com
+```
+
+Se o arquivo não existir, veja o nome certo:
+
+```bash
+ls /etc/nginx/sites-available
+```
+
+---
+
+## 2️⃣ Configure o HTTPS usando o certificado recém-criado
+
+No seu server block `server {}` da porta **443**, coloque o novo certificado:
+
+```nginx
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name mediacutsstudio.com www.mediacutsstudio.com;
+
+    ssl_certificate /etc/letsencrypt/live/mediacutsstudio.com/fullchain.pem; 
+    ssl_certificate_key /etc/letsencrypt/live/mediacutsstudio.com/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    root /var/www/mediacutsstudio.com/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+
+## 3️⃣ Teste configuração
+
+```bash
+sudo nginx -t
+```
+
+Se estiver tudo ok:
+
+---
+
+## 4️⃣ Reinicie o Nginx
+
+```bash
+sudo systemctl reload nginx
+```
+
+---
+
+## 5️⃣ Verificar se está funcionando
+
+```bash
+curl -I https://mediacutsstudio.com
+```
+
+Se aparecer `200` ou `301`, está ativo.
+
+---
+
+## 6️⃣ Renovação automática (provavelmente já está ativa)
+
+Cheque:
+
+```bash
+sudo systemctl status certbot.timer
+```
+
+Se estiver `active`, a renovação está configurada.
+
+---
+
+
+
+
+Tudo certo com o certificado do domínio — ele já está ativo e funcionando.
+Agora vamos **habilitar a renovação automática**, porque seu sistema **não tem o `certbot.timer` instalado** (instalações antigas do Ubuntu usam outro método).
+
+Vou te guiar direto ao ponto sem enrolação:
+
+---
+
+# ✅ 1️⃣ Verificar se existe o cron do Certbot
+
+Execute:
+
+```bash
+sudo systemctl status certbot.service
+```
+
+Se **não existir**, prossiga para instalar o serviço de renovação corretamente.
+
+---
+
+# ✅ 2️⃣ Criar cron de renovação (garante 100% que renova sozinho)
+
+Crie o cron:
+
+```bash
+sudo nano /etc/cron.d/certbot
+```
+
+Cole:
+
+```
+0 */12 * * * root certbot renew --quiet
+```
+
+Salvar e sair.
+
+Esse cron roda **duas vezes por dia** e renova automaticamente.
+
+---
+
+# ✅ 3️⃣ Garantir que Nginx reinicia quando renovar
+
+Editar hook do Certbot:
+
+```bash
+sudo nano /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+```
+
+Conteúdo:
+
+```bash
+#!/bin/bash
+systemctl reload nginx
+```
+
+Dar permissão:
+
+```bash
+sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+```
+
+---
+
+# ✅ 4️⃣ Testar a renovação agora
+
+```bash
+sudo certbot renew --dry-run
+```
+
+Se aparecer **"Congratulations, all simulated renewals succeeded"**, está tudo 100%.
+
+---
+
+# 🎯 Agora seu certificado vai renovar automaticamente sem timer.
+
+Se quiser, posso também **configurar todos os 18 domínios de uma vez com SSL** sem quebrar nada. Basta dizer.
+
+
+exemplo real:
+administrator@vps-trbg:~$ sudo certbot certonly --nginx
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+Which names would you like to activate HTTPS for?
+We recommend selecting either all domains, or all domains in a VirtualHost/server block.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: employers-ai.site
+2: api.employers-ai.site
+3: www.api.employers-ai.site
+4: www.employers-ai.site
+5: mediacutsstudio.com
+6: api.mediacutsstudio.com
+7: chatkit.api.mediacutsstudio.com
+8: www.chatkit.api.mediacutsstudio.com
+9: www.api.mediacutsstudio.com
+10: api.sheduler.mediacutsstudio.com
+11: www.api.sheduler.mediacutsstudio.com
+12: webhook.mediacutsstudio.com
+13: www.webhook.mediacutsstudio.com
+14: www.mediacutsstudio.com
+15: portifolio-ualerson.site
+16: api.portifolio-ualerson.site
+17: www.api.portifolio-ualerson.site
+18: www.portifolio-ualerson.site
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate numbers separated by commas and/or spaces, or leave input
+blank to select all options shown (Enter 'c' to cancel): 5
+Requesting a certificate for mediacutsstudio.com
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/mediacutsstudio.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/mediacutsstudio.com/privkey.pem
+This certificate expires on 2026-03-03.
+These files will be updated when the certificate renews.
+
+NEXT STEPS:
+- The certificate will need to be renewed before it expires. Certbot can automatically renew the certificate in the background, but you may need to take steps to enable that functionality. See https://certbot.org/renewal-setup for instructions.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+administrator@vps-trbg:~$ sudo nano /etc/nginx/sites-available/mediacutsstudio.com
+administrator@vps-trbg:~$ ls /etc/nginx/sites-available
+default  employersai.conf  mediacutsstudio.conf  portfolio.conf
+administrator@vps-trbg:~$  sudo nano /etc/nginx/sites-available/mediacutsstudio.conf
+administrator@vps-trbg:~$ ls /etc/nginx/sites-available
+default  employersai.conf  mediacutsstudio.conf  portfolio.conf
+administrator@vps-trbg:~$ sudo nano /etc/nginx/sites-available/mediacutsstudio.com
+administrator@vps-trbg:~$ sudo nano /etc/nginx/sites-available/mediacutsstudio.conf
+administrator@vps-trbg:~$ administrator@vps-trbg:~$ sudo nano /etc/nginx/sites-available/mediacutsstudio.conf
+administrator@vps-trbg:~$ administrator@vps-trbg:~$ sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+administrator@vps-trbg:~$ sudo systemctl reload nginx
+administrator@vps-trbg:~$ curl -I https://mediacutsstudio.com
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Wed, 03 Dec 2025 02:06:42 GMT
+Content-Type: text/html
+Connection: keep-alive
+Vary: Origin
+Cache-Control: no-cache
+Etag: W/"554-CSOaAxLMh+ugGP5NasG67qTuo0g"
+
+administrator@vps-trbg:~$ sudo systemctl status certbot.timer
+Unit certbot.timer could not be found.
+administrator@vps-trbg:~$ sudo systemctl status certbot.service
+Unit certbot.service could not be found.
+administrator@vps-trbg:~$ sudo nano /etc/cron.d/certbot
+administrator@vps-trbg:~$ administrator@vps-trbg:~$ sudo nano /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+administrator@vps-trbg:~$ sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+administrator@vps-trbg:~$ sudo certbot renew --dry-run
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Processing /etc/letsencrypt/renewal/mediacutsstudio.com.conf
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Account registered.
+Simulating renewal of an existing certificate for mediacutsstudio.com
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Congratulations, all simulated renewals succeeded:
+  /etc/letsencrypt/live/mediacutsstudio.com/fullchain.pem (success)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
 ### Guia de deploy em vps via ssh
 **Configuração xRDP**
 O xRDP permite acessar a VPS via desktop remoto (RDP).
